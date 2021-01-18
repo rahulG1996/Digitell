@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, Fragment} from 'react';
 import {
   View,
   Text,
@@ -21,7 +21,7 @@ import moment, {duration} from 'moment';
 import {AllColor} from '../../utils/allColors';
 import {useDispatch, useSelector} from 'react-redux';
 import * as stateActions from '../../redux/actions/stateActions';
-
+import SearchableDropdown from 'react-native-searchable-dropdown';
 const LoanApplicationForm = (props) => {
   const [isDatePickerVisibleone, setDatePickerVisibilityone] = useState(false);
   const [state, setState] = useState({
@@ -38,8 +38,10 @@ const LoanApplicationForm = (props) => {
       {value: 'Female', label: 'Female'},
     ],
     stateType: [
-      {value: 'Delhi', label: 'Delhi'},
-      {value: 'Mumbai', label: 'Mumbai'},
+      {id: 'delhi', name: 'delhi'},
+      {id: 'mumbai', name: 'mumbai'},
+      {id: 'mumbai', name: 'mumbai'},
+      {id: 'mumbai', name: 'mumbai'},
     ],
     cityType: [
       {value: 'x', label: 'x'},
@@ -56,7 +58,13 @@ const LoanApplicationForm = (props) => {
   }, []);
 
   useEffect(() => {
-    console.warn(allStates);
+    let data = [];
+    allStates &&
+      allStates.district &&
+      allStates.district.map((item) => {
+        data.push({id: item.state_id, name: item.state_name});
+      });
+    setState({...state, stateType: data});
   }, [allStates]);
 
   const hideDatePickerone = () => {
@@ -81,13 +89,13 @@ const LoanApplicationForm = (props) => {
     }
   };
   const handleState = (value, index) => {
-    if (index) {
-      setState({
-        ...state,
-        stateSelected: value,
-        stateId: index,
-      });
-    }
+    console.warn(state.stateSelected, 'hi');
+
+    setState({
+      ...state,
+      stateSelected: value.name,
+      stateId: value.id,
+    });
   };
   const handleCity = (value, index) => {
     if (index) {
@@ -100,7 +108,7 @@ const LoanApplicationForm = (props) => {
   };
   return (
     <View style={Styles.container}>
-      <KeyboardAwareScrollView>
+      <KeyboardAwareScrollView keyboardShouldPersistTaps="always">
         <View>
           <ImageBackground
             source={Background1}
@@ -210,15 +218,51 @@ const LoanApplicationForm = (props) => {
                     <Text style={styles.mandatoryText}>*</Text>
                   </View>
                   <View style={styles.sectionView}>
-                    <CommonDropdown
-                      itemData={state.stateType}
-                      onValueChange={(value, index) =>
-                        handleState(value, index)
-                      }
-                      value={state.stateSelected}
-                      placeholderText={
-                        state.placeHolderData ? state.placeHolderData : 'State'
-                      }
+                    <SearchableDropdown
+                      onTextChange={(text) => console.warn(text, 'kkkkk')}
+                      // Change listner on the searchable input
+                      onItemSelect={(item, index) => {
+                        handleState(item, index);
+                      }}
+                      // Called after the selection from the dropdown
+
+                      // Suggestion container style
+                      textInputStyle={{
+                        // Inserted text style
+                        padding: 12,
+                        borderBottomWidth: 0.7,
+                      }}
+                      itemStyle={{
+                        // Single dropdown item style
+                        padding: 10,
+                        zIndex: 2,
+                        marginTop: 2,
+                        backgroundColor: '#FAF9F8',
+                        borderColor: '#bbb',
+                        borderWidth: 1,
+                        width: '100%',
+                      }}
+                      itemTextStyle={{
+                        // Text style of a single dropdown item
+                        color: '#222',
+                      }}
+                      containerStyle={{width: '100%'}}
+                      itemsContainerStyle={{
+                        // Items container style you can pass maxHeight
+                        // To restrict the items dropdown hieght
+                        width: '100%',
+                        maxHeight: '100%',
+                      }}
+                      multi={false}
+                      items={state.stateType}
+                      // Mapping of item array
+                      placeholderTextColor="black"
+                      placeholder={state.stateSelected}
+                      // Place holder for the search input
+                      resetValue={false}
+                      // Reset textInput Value with true and false state
+                      underlineColorAndroid="transparent"
+                      // To remove the underline from the android input
                     />
 
                     <View style={styles.iconView}>
@@ -357,7 +401,7 @@ const styles = StyleSheet.create({
   sectionView: {
     backgroundColor: 'white',
     flexDirection: 'row',
-    width: '90%',
+    width: '95%',
   },
   mandatoryText: {
     color: 'red',
