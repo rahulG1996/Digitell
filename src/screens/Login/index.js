@@ -261,6 +261,7 @@ const Login = (props) => {
               <View style={{marginBottom: -95, alignItems: 'center'}}>
                 <ProceedButton
                   routeScreenName={'LoanApplicationForm'}
+                  completeSteps={1}
                   {...props}
                 />
               </View>

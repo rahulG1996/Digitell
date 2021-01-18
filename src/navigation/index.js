@@ -3,6 +3,8 @@ import React, {useEffect, useState} from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import Login from '../screens/Login';
 import LoanApplicationForm from '../screens/LoanApplicationForm';
+import LoanApplicationDocuments from '../screens/LoanApplicationDocuments';
+import RegistrationPayment from '../screens/RegistrationPayment';
 
 const Stack = createStackNavigator();
 
@@ -13,6 +15,14 @@ export default function Route() {
       <Stack.Screen
         name="LoanApplicationForm"
         component={LoanApplicationForm}
+      />
+      <Stack.Screen
+        name="LoanApplicationDocuments"
+        component={LoanApplicationDocuments}
+      />
+      <Stack.Screen
+        name="RegistrationPayment"
+        component={RegistrationPayment}
       />
     </Stack.Navigator>
   );

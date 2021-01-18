@@ -8,6 +8,7 @@ import {
   ImageBackground,
   Image,
 } from 'react-native';
+import {AllColor} from '../../utils/allColors';
 
 const RegistrationPageIndicator = (props) => {
   return (
@@ -22,6 +23,8 @@ const RegistrationPageIndicator = (props) => {
           styles.numberContainer,
           props.number == 1
             ? {backgroundColor: 'white'}
+            : props.completeSteps == 1
+            ? {backgroundColor: AllColor.blue}
             : {backgroundColor: 'transparent'},
         ]}>
         <Text
@@ -39,6 +42,8 @@ const RegistrationPageIndicator = (props) => {
           styles.numberContainer,
           props.number == 2
             ? {backgroundColor: 'white'}
+            : props.completeSteps == 1
+            ? {backgroundColor: AllColor.blue}
             : {backgroundColor: 'transparent'},
         ]}>
         <Text
@@ -56,6 +61,8 @@ const RegistrationPageIndicator = (props) => {
           styles.numberContainer,
           props.number == 3
             ? {backgroundColor: 'white'}
+            : props.completeSteps == 2
+            ? {backgroundColor: AllColor.blue}
             : {backgroundColor: 'transparent'},
         ]}>
         <Text

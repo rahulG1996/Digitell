@@ -18,9 +18,9 @@ import CommonDropdown from '../../components/CommonDropdown';
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
 import ProceedButton from '../../components/ProceedButton';
 import moment, {duration} from 'moment';
-
 import {AllColor} from '../../utils/allColors';
-import {ScrollView} from 'react-native-gesture-handler';
+import {useDispatch, useSelector} from 'react-redux';
+import * as stateActions from '../../redux/actions/stateActions';
 
 const LoanApplicationForm = (props) => {
   const [isDatePickerVisibleone, setDatePickerVisibilityone] = useState(false);
@@ -46,6 +46,19 @@ const LoanApplicationForm = (props) => {
       {value: 'y', label: 'y'},
     ],
   });
+
+  const dispatch = useDispatch();
+
+  const allStates = useSelector((state) => state.StateReducer.allStates);
+
+  useEffect(() => {
+    dispatch(stateActions.getStates());
+  }, []);
+
+  useEffect(() => {
+    console.warn(allStates);
+  }, [allStates]);
+
   const hideDatePickerone = () => {
     setDatePickerVisibilityone(false);
   };
@@ -54,7 +67,6 @@ const LoanApplicationForm = (props) => {
   };
 
   const handleConfirmone = (date) => {
-    console.warn('A date has been picked: ', date);
     var a = moment(date).format('MM/DD/YYYY');
     setState({...state, dateone: a});
     hideDatePickerone();
@@ -106,24 +118,24 @@ const LoanApplicationForm = (props) => {
         <View style={styles.formContainer}>
           <View style={{width: '90%'}}>
             <Text style={styles.loanText}>Loan Application Request</Text>
-            <RegistrationPageIndicator number={2} />
+            <RegistrationPageIndicator number={2} completeSteps={1} />
           </View>
           <View style={styles.mainContainer}>
             <View style={styles.subContainer}>
-              <View style={[styles.subsubContainer,{justifyContent:'space-between'}]}>
-                <View style={{flexDirection:'row'}}>
-                <Image
-                  source={require('../../assets/images/loanapplicant.png')}
-                />
-                <Text style={styles.textStyle}>Loan Applicant Name</Text>
-                <Text style={styles.mandatoryText}>*</Text>
+              <View
+                style={[
+                  styles.subsubContainer,
+                  {justifyContent: 'space-between'},
+                ]}>
+                <View style={{flexDirection: 'row'}}>
+                  <Image
+                    source={require('../../assets/images/loanapplicant.png')}
+                  />
+                  <Text style={styles.textStyle}>Loan Applicant Name</Text>
+                  <Text style={styles.mandatoryText}>*</Text>
                 </View>
-                
-                <Image
-              
-                  source={require('../../assets/images/i.png')}
-                />
-              
+
+                <Image source={require('../../assets/images/i.png')} />
               </View>
               <View style={{marginTop: 5}}>
                 <TextInput style={styles.textInput} placeholder="First Name" />
@@ -161,7 +173,7 @@ const LoanApplicationForm = (props) => {
                   mode="date"
                   onConfirm={handleConfirmone}
                   onCancel={hideDatePickerone}
-                  minimumDate={new Date()}
+                  maximumDate={new Date()}
                 />
               </View>
               <View>
@@ -285,7 +297,10 @@ const LoanApplicationForm = (props) => {
                     Please press "Submit" button for next page
                   </Text>
                   <View style={{alignItems: 'center'}}>
-                    <ProceedButton {...props} />
+                    <ProceedButton
+                      {...props}
+                      routeScreenName="LoanApplicationDocuments"
+                    />
                   </View>
                 </View>
               </View>
@@ -344,8 +359,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: '90%',
   },
-  mandatoryText:{
-    color:'red'
-  }
-  
+  mandatoryText: {
+    color: 'red',
+  },
 });
