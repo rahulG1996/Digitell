@@ -25,9 +25,9 @@ import SearchableDropdown from 'react-native-searchable-dropdown';
 const LoanApplicationForm = (props) => {
   const [isDatePickerVisibleone, setDatePickerVisibilityone] = useState(false);
   const [state, setState] = useState({
-    dateone: '',
+    dateone: 'Select DOB',
     leaveSelected: '',
-    stateSelected: '',
+    stateSelected: 'Select Your State',
     citySelected: '',
     phonenumber: '',
     cityId: '',
@@ -53,6 +53,8 @@ const LoanApplicationForm = (props) => {
 
   const allStates = useSelector((state) => state.StateReducer.allStates);
 
+  const allCities = useSelector((state) => state.StateReducer.allCities);
+
   useEffect(() => {
     dispatch(stateActions.getStates());
   }, []);
@@ -67,6 +69,16 @@ const LoanApplicationForm = (props) => {
     setState({...state, stateType: data});
   }, [allStates]);
 
+  useEffect(() => {
+    let data = [];
+    allCities &&
+      allCities.district &&
+      allCities.district.map((item) => {
+        data.push({id: item.district_id, name: item.district_name});
+      });
+    setState({...state, cityType: data});
+  }, [allCities]);
+
   const hideDatePickerone = () => {
     setDatePickerVisibilityone(false);
   };
@@ -79,6 +91,7 @@ const LoanApplicationForm = (props) => {
     setState({...state, dateone: a});
     hideDatePickerone();
   };
+
   const handleLeaves = (value, index) => {
     if (index) {
       setState({
@@ -88,24 +101,24 @@ const LoanApplicationForm = (props) => {
       });
     }
   };
-  const handleState = (value, index) => {
-    console.warn(state.stateSelected, 'hi');
 
+  const handleState = (value, index) => {
+    dispatch(stateActions.getCities(value.id));
     setState({
       ...state,
       stateSelected: value.name,
       stateId: value.id,
     });
   };
+
   const handleCity = (value, index) => {
-    if (index) {
-      setState({
-        ...state,
-        citySelected: value,
-        cityId: index,
-      });
-    }
+    setState({
+      ...state,
+      citySelected: value.name,
+      cityId: value.id,
+    });
   };
+
   return (
     <View style={Styles.container}>
       <KeyboardAwareScrollView keyboardShouldPersistTaps="always">
@@ -161,20 +174,22 @@ const LoanApplicationForm = (props) => {
                   <Text style={styles.textStyle}>Date of Birth</Text>
                   <Text style={styles.mandatoryText}>*</Text>
                 </View>
-                <View
+                <TouchableOpacity
                   style={{
                     flexDirection: 'row',
                     justifyContent: 'space-between',
-                  }}>
+                    alignItems: 'center',
+                  }}
+                  onPress={showDatePickerone}>
                   <Text
                     onPress={showDatePickerone}
                     style={{color: 'grey', marginTop: 10}}>
-                    dd-mm-yyyy
+                    {state.dateone}
                   </Text>
                   <View style={styles.iconView}>
                     <Icon name="arrow-down" color="orange" size={15} />
                   </View>
-                </View>
+                </TouchableOpacity>
 
                 <DateTimePickerModal
                   isVisible={isDatePickerVisibleone}
@@ -220,20 +235,14 @@ const LoanApplicationForm = (props) => {
                   <View style={styles.sectionView}>
                     <SearchableDropdown
                       onTextChange={(text) => console.warn(text, 'kkkkk')}
-                      // Change listner on the searchable input
                       onItemSelect={(item, index) => {
                         handleState(item, index);
                       }}
-                      // Called after the selection from the dropdown
-
-                      // Suggestion container style
                       textInputStyle={{
-                        // Inserted text style
                         padding: 12,
                         borderBottomWidth: 0.7,
                       }}
                       itemStyle={{
-                        // Single dropdown item style
                         padding: 10,
                         zIndex: 2,
                         marginTop: 2,
@@ -243,26 +252,19 @@ const LoanApplicationForm = (props) => {
                         width: '100%',
                       }}
                       itemTextStyle={{
-                        // Text style of a single dropdown item
                         color: '#222',
                       }}
                       containerStyle={{width: '100%'}}
                       itemsContainerStyle={{
-                        // Items container style you can pass maxHeight
-                        // To restrict the items dropdown hieght
                         width: '100%',
                         maxHeight: '100%',
                       }}
                       multi={false}
                       items={state.stateType}
-                      // Mapping of item array
                       placeholderTextColor="black"
                       placeholder={state.stateSelected}
-                      // Place holder for the search input
                       resetValue={false}
-                      // Reset textInput Value with true and false state
                       underlineColorAndroid="transparent"
-                      // To remove the underline from the android input
                     />
 
                     <View style={styles.iconView}>
@@ -270,13 +272,38 @@ const LoanApplicationForm = (props) => {
                     </View>
                   </View>
                   <View style={styles.sectionView}>
-                    <CommonDropdown
-                      itemData={state.cityType}
-                      onValueChange={(value, index) => handleCity(value, index)}
-                      value={state.citySelected}
-                      placeholderText={
-                        state.placeHolderData ? state.placeHolderData : 'City'
-                      }
+                    <SearchableDropdown
+                    onTextChange={(text) => console.warn(text, 'kkkkk')}
+                      onItemSelect={(item, index) => {
+                        handleCity(item, index);
+                      }}
+                      textInputStyle={{
+                        padding: 12,
+                        borderBottomWidth: 0.7,
+                      }}
+                      itemStyle={{
+                        padding: 10,
+                        zIndex: 2,
+                        marginTop: 2,
+                        backgroundColor: '#FAF9F8',
+                        borderColor: '#bbb',
+                        borderWidth: 1,
+                        width: '100%',
+                      }}
+                      itemTextStyle={{
+                        color: '#222',
+                      }}
+                      containerStyle={{width: '100%'}}
+                      itemsContainerStyle={{
+                        width: '100%',
+                        maxHeight: '100%',
+                      }}
+                      multi={false}
+                      items={state.cityType}
+                      placeholderTextColor="black"
+                      placeholder={state.citySelected}
+                      resetValue={false}
+                      underlineColorAndroid="transparent"
                     />
 
                     <View style={styles.iconView}>

@@ -6,3 +6,10 @@ export function getStates() {
     dispatch({type: 'STATES', value: getAllStates});
   });
 }
+
+export function getCities(id) {
+  return (dispatch = async (dispatch) => {
+    let getAllCities = await NoAuthAPI(`get_district/${id}`, 'GET');
+    dispatch({type: 'CITIES', value: getAllCities});
+  });
+}

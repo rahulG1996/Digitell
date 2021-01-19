@@ -18,6 +18,8 @@ import {AllColor} from '../../utils/allColors';
 import DocumentPicker from 'react-native-document-picker';
 import ProceedButton from '../../components/ProceedButton';
 import {onChange} from 'react-native-reanimated';
+import {ActionSheet} from 'react-native-cross-actionsheet';
+import ImagePicker from 'react-native-image-crop-picker';
 
 const LoanApplicationDocuments = (props) => {
   const [state, setState] = useState({
@@ -25,6 +27,8 @@ const LoanApplicationDocuments = (props) => {
     adharNo: '',
     loanAmount: '',
     userImage: '',
+    showActionSheet: false,
+    userImageResponse: '',
   });
   const openFiles = async () => {
     try {
@@ -56,6 +60,27 @@ const LoanApplicationDocuments = (props) => {
       loanAmount = value.replace(/[^0-9]/g, '');
     }
     setState({...state, panNo, adharNo, loanAmount});
+  };
+
+  const handleImage = (type) => {
+    console.warn('type', type);
+    if (type === 'gallary') {
+      ImagePicker.openPicker({
+        width: 300,
+        height: 400,
+      }).then((image) => {
+        // console.warn(image);
+        setState({...state, userImageResponse: image, showActionSheet: false});
+      });
+    } else {
+      ImagePicker.openCamera({
+        width: 300,
+        height: 400,
+      }).then((image) => {
+        // console.warn(image);
+        setState({...state, userImageResponse: image, showActionSheet: false});
+      });
+    }
   };
 
   return (
@@ -109,7 +134,9 @@ const LoanApplicationDocuments = (props) => {
                     style={styles.uploadIcon}
                     resizeMode="contain"
                   />
-                  <Text style={{fontSize: 11}}>Upload Document</Text>
+                  <Text style={{fontSize: 11, color: AllColor.grey}}>
+                    Upload Document
+                  </Text>
                 </TouchableOpacity>
               </View>
 
@@ -141,14 +168,16 @@ const LoanApplicationDocuments = (props) => {
                     style={styles.uploadIcon}
                     resizeMode="contain"
                   />
-                  <Text style={{fontSize: 11}}>Upload Document</Text>
+                  <Text style={{fontSize: 11, color: AllColor.grey}}>
+                    Upload Document
+                  </Text>
                 </TouchableOpacity>
               </View>
 
               <View style={styles.documentHeading}>
                 <View>
                   <Image
-                    source={DocumentIcon}
+                    source={require('../../assets/images/loanIcon.png')}
                     style={styles.documentIconStyle}
                     resizeMode="contain"
                   />
@@ -169,12 +198,27 @@ const LoanApplicationDocuments = (props) => {
               </View>
 
               <View style={{alignItems: 'center'}}>
+                {state.userImageResponse ? (
+                  <View
+                    style={{
+                      width: 100,
+                      height: 100,
+                      borderRadius: 50,
+                      marginVertical: 20,
+                    }}>
+                    <Image
+                      source={{uri: state.userImageResponse.path}}
+                      style={{width: '100%', height: '100%', borderRadius: 50}}
+                      resizeMode="cover"
+                    />
+                  </View>
+                ) : null}
                 <TouchableOpacity
                   style={[
                     styles.uploadBtn,
                     {width: '100%', paddingVertical: 15, marginVertical: 20},
                   ]}
-                  onPress={openFiles}>
+                  onPress={() => setState({...state, showActionSheet: true})}>
                   <View style={{width: '20%', alignItems: 'center'}}>
                     <Image
                       source={require('../../assets/images/camera.png')}
@@ -183,7 +227,7 @@ const LoanApplicationDocuments = (props) => {
                     />
                   </View>
                   <View style={{width: '80%'}}>
-                    <Text style={{color: 'grey'}}>Upload Selfie</Text>
+                    <Text style={{color: AllColor.grey}}>Upload Selfie</Text>
                     <Text style={{color: AllColor.orange}}>
                       Please use white background
                     </Text>
@@ -200,7 +244,12 @@ const LoanApplicationDocuments = (props) => {
                   }}>
                   "RS. 100"
                 </Text>
-                <Text style={{textAlign: 'center', paddingVertical: 10}}>
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    paddingVertical: 10,
+                    color: AllColor.grey,
+                  }}>
                   Please press "Submit" button to proceed the payment
                 </Text>
                 <View>
@@ -214,11 +263,27 @@ const LoanApplicationDocuments = (props) => {
           </View>
         </View>
       </KeyboardAwareScrollView>
+      {state.showActionSheet ? <ShowSheet handleImage={handleImage} /> : null}
     </View>
   );
 };
 
 export default LoanApplicationDocuments;
+
+const ShowSheet = (props) => {
+  ActionSheet.options({
+    options: [
+      {
+        text: 'Select from gallary',
+        onPress: () => props.handleImage('gallary'),
+      },
+      {text: 'Open camera', onPress: () => props.handleImage('camera')},
+    ],
+    cancel: {onPress: () => console.log('cancel')},
+  });
+
+  return null;
+};
 
 const styles = StyleSheet.create({
   formContainer: {

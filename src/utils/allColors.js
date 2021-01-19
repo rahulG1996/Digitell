@@ -3,4 +3,5 @@ export const AllColor = {
   blue: '#3A86FF',
   red: '#E92B25',
   purple: '#8338EC',
+  grey: '#7488A7',
 };
