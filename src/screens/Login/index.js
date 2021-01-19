@@ -17,9 +17,14 @@ import Logo from '../../assets/images/logo.png';
 import ProceedButton from '../../components/ProceedButton';
 import RegistrationPageIndicator from '../../components/RegistrationPageIndicator';
 import {AllColor} from '../../utils/allColors';
+import PhoneInput from 'react-native-phone-number-input';
 
 const Login = (props) => {
-  const [state, setState] = useState({activeTab: 'login', isChecked: false});
+  const [state, setState] = useState({
+    activeTab: 'login',
+    isChecked: false,
+    phonenumber: '',
+  });
 
   return (
     <View style={Styles.container}>
@@ -191,7 +196,7 @@ const Login = (props) => {
                       backgroundColor: '#e2e2e2',
                       paddingVertical: 10,
                       borderRadius: 6,
-                      paddingHorizontal: 10,
+                      paddingHorizontal: 3,
                       marginVertical: 20,
                     }}>
                     <View
@@ -212,28 +217,26 @@ const Login = (props) => {
                         <Text style={{color: 'white'}}>Verify</Text>
                       </TouchableOpacity>
                     </View>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        borderBottomWidth: 1,
-                        paddingBottom: 5,
-                        marginTop: 10,
-                        alignItems: 'center',
-                      }}>
-                      <View
-                        style={{
-                          width: '30%',
-                          alignItems: 'center',
-                          borderRightWidth: 1,
-                        }}>
-                        <Text>IND +91</Text>
-                      </View>
-                      <View style={{width: '70%'}}>
-                        <TextInput
-                          style={{paddingLeft: 10}}
-                          placeholder="Enter Mobile Number"
-                        />
-                      </View>
+                    <View style={{}}>
+                      <PhoneInput
+                        placeholder={'Enter Mobile Number'}
+                        defaultCode="IN"
+                        containerStyle={{
+                          backgroundColor: '#e2e2e2',
+                          borderBottomWidth: 1,
+                          height: 50,
+                        }}
+                        textContainerStyle={{
+                          backgroundColor: '#e2e2e2',
+                          borderLeftWidth: 1,
+                        }}
+                        layout="second"
+                        // disableArrowIcon={true}
+                        onChangeFormattedText={(text) => {
+                          setState({...state, phonenumber: text});
+                        }}
+                        autoFocus
+                      />
                     </View>
                   </View>
 

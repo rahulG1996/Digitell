@@ -22,6 +22,7 @@ import {AllColor} from '../../utils/allColors';
 import {useDispatch, useSelector} from 'react-redux';
 import * as stateActions from '../../redux/actions/stateActions';
 import SearchableDropdown from 'react-native-searchable-dropdown';
+import PhoneInput from 'react-native-phone-number-input';
 const LoanApplicationForm = (props) => {
   const [isDatePickerVisibleone, setDatePickerVisibilityone] = useState(false);
   const [state, setState] = useState({
@@ -273,7 +274,7 @@ const LoanApplicationForm = (props) => {
                   </View>
                   <View style={styles.sectionView}>
                     <SearchableDropdown
-                    onTextChange={(text) => console.warn(text, 'kkkkk')}
+                      onTextChange={(text) => console.warn(text, 'kkkkk')}
                       onItemSelect={(item, index) => {
                         handleCity(item, index);
                       }}
@@ -339,30 +340,25 @@ const LoanApplicationForm = (props) => {
                         </Text>
                       </View>
                     </View>
-                    <View
-                      style={{
-                        flexDirection: 'row',
+                    <PhoneInput
+                      placeholder={'Enter Mobile Number'}
+                      defaultCode="IN"
+                      containerStyle={{
+                        backgroundColor: 'white',
                         borderBottomWidth: 1,
-                        paddingBottom: 5,
-                        marginTop: 10,
-                        alignItems: 'center',
-                      }}>
-                      <View
-                        style={{
-                          width: '30%',
-                          alignItems: 'center',
-                          borderRightWidth: 1,
-                        }}>
-                        <Text>IND +91</Text>
-                      </View>
-                      <View style={{width: '70%'}}>
-                        <TextInput
-                          style={{paddingLeft: 10}}
-                          placeholder="Enter Mobile Number"
-                          keyboardType="numeric"
-                        />
-                      </View>
-                    </View>
+                        height: 50,
+                      }}
+                      textContainerStyle={{
+                        backgroundColor: 'white',
+                        borderLeftWidth: 1,
+                      }}
+                      layout="second"
+                      // disableArrowIcon={true}
+                      onChangeFormattedText={(text) => {
+                        setState({...state, phonenumber: text});
+                      }}
+                      autoFocus
+                    />
                   </View>
                   <Text style={{textAlign: 'center', color: 'grey'}}>
                     Please press "Submit" button for next page
