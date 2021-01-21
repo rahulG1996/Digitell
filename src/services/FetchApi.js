@@ -1,4 +1,5 @@
 import {baseUrl} from './apiServices';
+import {ToastMessage} from '../components/ToastMessage';
 
 var AuthAPI = (apiName, apiMethod, token, data) => {
   var init =
@@ -40,35 +41,27 @@ var AuthAPI = (apiName, apiMethod, token, data) => {
 };
 
 var NoAuthAPI = (apiName, apiMethod, data) => {
-  // if (navigator.onLine) {
+  let formBody = new FormData();
+  for (let i in data) {
+    formBody.append(i, data[i]);
+  }
+  console.warn('body--->', JSON.stringify(formBody, undefined, 2));
   var init =
     apiMethod == 'GET'
       ? {
           method: 'GET',
-
-          //   headers: {
-          //     //'Authorization': token,
-          //     //"Content-Type": 'application/json',
-          //     Accept: 'application/json',
-          //   },
         }
       : apiMethod == 'POST'
       ? {
           method: apiMethod,
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
+          body: formBody,
         }
       : {
           method: apiMethod,
           headers: {
-            //'Authorization': token,
-            //'Content-Type': "multipart/form-data",
             Accept: 'application/json',
           },
-          body: JSON.stringify(data),
+          body: formBody,
         };
   return fetch(baseUrl + apiName, init)
     .then((response) =>
@@ -77,7 +70,10 @@ var NoAuthAPI = (apiName, apiMethod, data) => {
       }),
     )
     .catch((err) => {
-      return {message: ' Server encountered a problem please retry ! '};
+      setTimeout(() => {
+        ToastMessage('Server encounter an error, please try after some time');
+      }, 400);
+      return false;
     });
 };
 

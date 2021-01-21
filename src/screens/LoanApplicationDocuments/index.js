@@ -29,6 +29,10 @@ const LoanApplicationDocuments = (props) => {
     userImage: '',
     showActionSheet: false,
     userImageResponse: '',
+    panFrontData: '',
+    panBackData: '',
+    adharFrontData: '',
+    adharBackData: '',
   });
   const openFiles = async () => {
     try {
@@ -83,6 +87,57 @@ const LoanApplicationDocuments = (props) => {
     }
   };
 
+  const uploadDoc = async (type) => {
+    let {panBackData, panFrontData, adharFrontData, adharBackData} = state;
+    await ImagePicker.openPicker({
+      width: 300,
+      height: 400,
+    }).then((image) => {
+      if (type === 'panFront') {
+        panFrontData = image;
+      } else if (type === 'panBack') {
+        panBackData = image;
+      } else if (type === 'adharFront') {
+        adharFrontData = image;
+      } else {
+        adharBackData = image;
+      }
+    });
+    setState({
+      ...state,
+      panBackData,
+      panFrontData,
+      adharFrontData,
+      adharBackData,
+    });
+  };
+
+  const captureImageDoc = async (type) => {
+    console.warn(type);
+    let {panBackData, panFrontData, adharFrontData, adharBackData} = state;
+    await ImagePicker.openCamera({
+      width: 300,
+      height: 400,
+    }).then((image) => {
+      if (type === 'panFront') {
+        panFrontData = image;
+      } else if (type === 'panBack') {
+        panBackData = image;
+      } else if (type === 'adharFront') {
+        adharFrontData = image;
+      } else {
+        adharBackData = image;
+      }
+    });
+    setState({
+      ...state,
+      panBackData,
+      panFrontData,
+      adharFrontData,
+      adharBackData,
+    });
+  };
+
   return (
     <View style={Styles.container}>
       <KeyboardAwareScrollView style={{flex: 1}}>
@@ -103,7 +158,7 @@ const LoanApplicationDocuments = (props) => {
         <View style={styles.formContainer}>
           <View style={{width: '90%'}}>
             <Text style={styles.loanText}>Loan Applicatio Request</Text>
-            <RegistrationPageIndicator number={2} completeSteps={1} />
+            {/* <RegistrationPageIndicator number={2} completeSteps={1} /> */}
           </View>
           <View style={styles.mainContainer}>
             <View style={{width: '90%'}}>
@@ -128,15 +183,105 @@ const LoanApplicationDocuments = (props) => {
                     maxLength={10}
                   />
                 </View>
-                <TouchableOpacity style={styles.uploadBtn} onPress={openFiles}>
+              </View>
+
+              <View style={styles.documentHeading}>
+                <Text>Upload Front Portion</Text>
+              </View>
+
+              {state.panFrontData ? (
+                <View style={styles.uploadedDocument}>
                   <Image
-                    source={require('../../assets/images/upload.png')}
-                    style={styles.uploadIcon}
-                    resizeMode="contain"
+                    source={{uri: state.panFrontData.path}}
+                    style={styles.uploadedDocumentStyle}
+                    resizeMode="cover"
                   />
-                  <Text style={{fontSize: 11, color: AllColor.grey}}>
-                    Upload Document
-                  </Text>
+                </View>
+              ) : null}
+
+              <View style={styles.uploadContainer}>
+                <TouchableOpacity
+                  style={styles.uploadBtn}
+                  onPress={() => uploadDoc('panFront')}>
+                  <View>
+                    <Image
+                      source={require('../../assets/images/upload.png')}
+                      style={styles.uploadIcon}
+                      resizeMode="contain"
+                    />
+                  </View>
+                  <View>
+                    <Text style={{color: AllColor.grey, fontSize: 9}}>
+                      Upload from Gallery
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+                <Text>or</Text>
+                <TouchableOpacity
+                  style={styles.uploadBtn}
+                  onPress={() => captureImageDoc('panFront')}>
+                  <View>
+                    <Image
+                      source={require('../../assets/images/camera.png')}
+                      style={styles.uploadIcon}
+                      resizeMode="contain"
+                    />
+                  </View>
+                  <View>
+                    <Text style={{color: AllColor.grey, fontSize: 9}}>
+                      Capture Document
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.documentHeading}>
+                <Text>Upload Back Portion</Text>
+              </View>
+
+              {state.panBackData ? (
+                <View style={styles.uploadedDocument}>
+                  <Image
+                    source={{uri: state.panBackData.path}}
+                    style={styles.uploadedDocumentStyle}
+                    resizeMode="cover"
+                  />
+                </View>
+              ) : null}
+
+              <View style={styles.uploadContainer}>
+                <TouchableOpacity
+                  style={styles.uploadBtn}
+                  onPress={() => uploadDoc('panBack')}>
+                  <View>
+                    <Image
+                      source={require('../../assets/images/upload.png')}
+                      style={styles.uploadIcon}
+                      resizeMode="contain"
+                    />
+                  </View>
+                  <View>
+                    <Text style={{color: AllColor.grey, fontSize: 9}}>
+                      Upload from Gallery
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+                <Text>or</Text>
+                <TouchableOpacity
+                  style={styles.uploadBtn}
+                  onPress={() => captureImageDoc('panback')}>
+                  <View>
+                    <Image
+                      source={require('../../assets/images/camera.png')}
+                      style={styles.uploadIcon}
+                      resizeMode="contain"
+                    />
+                  </View>
+                  <View>
+                    <Text style={{color: AllColor.grey, fontSize: 9}}>
+                      Capture Document
+                    </Text>
+                  </View>
                 </TouchableOpacity>
               </View>
 
@@ -162,15 +307,105 @@ const LoanApplicationDocuments = (props) => {
                     maxLength={12}
                   />
                 </View>
-                <TouchableOpacity style={styles.uploadBtn} onPress={openFiles}>
+              </View>
+
+              <View style={styles.documentHeading}>
+                <Text>Upload Front Portion</Text>
+              </View>
+
+              {state.adharFrontData ? (
+                <View style={styles.uploadedDocument}>
                   <Image
-                    source={require('../../assets/images/upload.png')}
-                    style={styles.uploadIcon}
-                    resizeMode="contain"
+                    source={{uri: state.adharFrontData.path}}
+                    style={styles.uploadedDocumentStyle}
+                    resizeMode="cover"
                   />
-                  <Text style={{fontSize: 11, color: AllColor.grey}}>
-                    Upload Document
-                  </Text>
+                </View>
+              ) : null}
+
+              <View style={styles.uploadContainer}>
+                <TouchableOpacity
+                  style={styles.uploadBtn}
+                  onPress={() => uploadDoc('adharFront')}>
+                  <View>
+                    <Image
+                      source={require('../../assets/images/upload.png')}
+                      style={styles.uploadIcon}
+                      resizeMode="contain"
+                    />
+                  </View>
+                  <View>
+                    <Text style={{color: AllColor.grey, fontSize: 9}}>
+                      Upload from Gallery
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+                <Text>or</Text>
+                <TouchableOpacity
+                  style={styles.uploadBtn}
+                  onPress={() => captureImageDoc('adharFront')}>
+                  <View>
+                    <Image
+                      source={require('../../assets/images/camera.png')}
+                      style={styles.uploadIcon}
+                      resizeMode="contain"
+                    />
+                  </View>
+                  <View>
+                    <Text style={{color: AllColor.grey, fontSize: 9}}>
+                      Capture Document
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.documentHeading}>
+                <Text>Upload Back Portion</Text>
+              </View>
+
+              {state.adharBackData ? (
+                <View style={styles.uploadedDocument}>
+                  <Image
+                    source={{uri: state.adharBackData.path}}
+                    style={styles.uploadedDocumentStyle}
+                    resizeMode="cover"
+                  />
+                </View>
+              ) : null}
+
+              <View style={styles.uploadContainer}>
+                <TouchableOpacity
+                  style={styles.uploadBtn}
+                  onPress={() => uploadDoc('adharBack')}>
+                  <View>
+                    <Image
+                      source={require('../../assets/images/upload.png')}
+                      style={styles.uploadIcon}
+                      resizeMode="contain"
+                    />
+                  </View>
+                  <View>
+                    <Text style={{color: AllColor.grey, fontSize: 9}}>
+                      Upload from Gallery
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+                <Text>or</Text>
+                <TouchableOpacity
+                  style={styles.uploadBtn}
+                  onPress={() => captureImageDoc('adharback')}>
+                  <View>
+                    <Image
+                      source={require('../../assets/images/camera.png')}
+                      style={styles.uploadIcon}
+                      resizeMode="contain"
+                    />
+                  </View>
+                  <View>
+                    <Text style={{color: AllColor.grey, fontSize: 9}}>
+                      Capture Document
+                    </Text>
+                  </View>
                 </TouchableOpacity>
               </View>
 
@@ -199,25 +434,16 @@ const LoanApplicationDocuments = (props) => {
 
               <View style={{alignItems: 'center'}}>
                 {state.userImageResponse ? (
-                  <View
-                    style={{
-                      width: 100,
-                      height: 100,
-                      borderRadius: 50,
-                      marginVertical: 20,
-                    }}>
+                  <View style={styles.uploadedDocument}>
                     <Image
                       source={{uri: state.userImageResponse.path}}
-                      style={{width: '100%', height: '100%', borderRadius: 50}}
+                      style={styles.uploadedDocumentStyle}
                       resizeMode="cover"
                     />
                   </View>
                 ) : null}
                 <TouchableOpacity
-                  style={[
-                    styles.uploadBtn,
-                    {width: '100%', paddingVertical: 15, marginVertical: 20},
-                  ]}
+                  style={[styles.uploadBtn, {width: '100%'}]}
                   onPress={() => setState({...state, showActionSheet: true})}>
                   <View style={{width: '20%', alignItems: 'center'}}>
                     <Image
@@ -318,8 +544,9 @@ const styles = StyleSheet.create({
   uploadDocContainer: {
     borderBottomWidth: 1,
     borderBottomColor: '#e2e2e2',
-    flexDirection: 'row',
-    alignItems: 'center',
+    paddingBottom: 8,
+    // flexDirection: 'row',
+    // alignItems: 'center',
   },
   uploadBtn: {
     width: '40%',
@@ -333,6 +560,13 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     borderColor: AllColor.blue,
     borderRadius: 6,
+    paddingVertical: 15,
+    marginVertical: 20,
+  },
+  uploadContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   input: {
     width: '60%',
@@ -340,5 +574,16 @@ const styles = StyleSheet.create({
   uploadIcon: {
     width: 18,
     height: 18,
+  },
+  uploadedDocument: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginVertical: 20,
+  },
+  uploadedDocumentStyle: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 50,
   },
 });

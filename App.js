@@ -6,7 +6,8 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
-import store from './src/redux/store';
+import {store, persistor} from './src/redux/store';
+import {PersistGate} from 'redux-persist/integration/react';
 import {Provider} from 'react-redux';
 import {NavigationContainer} from '@react-navigation/native';
 
@@ -16,7 +17,9 @@ const App = () => {
       <SafeAreaView style={{flex: 1}}>
         <NavigationContainer>
           <Provider store={store}>
-            <Route />
+            <PersistGate loading={null} persistor={persistor}>
+              <Route />
+            </PersistGate>
           </Provider>
         </NavigationContainer>
       </SafeAreaView>

@@ -23,13 +23,14 @@ import {useDispatch, useSelector} from 'react-redux';
 import * as stateActions from '../../redux/actions/stateActions';
 import SearchableDropdown from 'react-native-searchable-dropdown';
 import PhoneInput from 'react-native-phone-number-input';
+
 const LoanApplicationForm = (props) => {
   const [isDatePickerVisibleone, setDatePickerVisibilityone] = useState(false);
   const [state, setState] = useState({
     dateone: 'Select DOB',
     leaveSelected: '',
-    stateSelected: 'Select Your State',
-    citySelected: '',
+    stateSelected: 'State',
+    citySelected: 'City',
     phonenumber: '',
     cityId: '',
     stateId: '',
@@ -44,10 +45,12 @@ const LoanApplicationForm = (props) => {
       {id: 'mumbai', name: 'mumbai'},
       {id: 'mumbai', name: 'mumbai'},
     ],
-    cityType: [
-      {value: 'x', label: 'x'},
-      {value: 'y', label: 'y'},
+    cityType: [{value: '', label: ''}],
+    occupationType: [
+      {label: 'Government', value: 'Government'},
+      {label: 'Private', value: 'Private'},
     ],
+    occupationSelected: '',
   });
 
   const dispatch = useDispatch();
@@ -103,6 +106,15 @@ const LoanApplicationForm = (props) => {
     }
   };
 
+  const handleOccupation = (value, index) => {
+    if (index) {
+      setState({
+        ...state,
+        occupationSelected: value,
+      });
+    }
+  };
+
   const handleState = (value, index) => {
     dispatch(stateActions.getCities(value.id));
     setState({
@@ -140,7 +152,7 @@ const LoanApplicationForm = (props) => {
         <View style={styles.formContainer}>
           <View style={{width: '90%'}}>
             <Text style={styles.loanText}>Loan Application Request</Text>
-            <RegistrationPageIndicator number={2} completeSteps={1} />
+            {/* <RegistrationPageIndicator number={2} completeSteps={1} /> */}
           </View>
           <View style={styles.mainContainer}>
             <View style={styles.subContainer}>
@@ -281,6 +293,7 @@ const LoanApplicationForm = (props) => {
                       textInputStyle={{
                         padding: 12,
                         borderBottomWidth: 0.7,
+                        width:'100%'
                       }}
                       itemStyle={{
                         padding: 10,
@@ -353,19 +366,56 @@ const LoanApplicationForm = (props) => {
                         borderLeftWidth: 1,
                       }}
                       layout="second"
+                      textInputProps={{
+                        maxLength: 10,
+                        color: 'black',
+                        height: 50,
+                      }}
                       // disableArrowIcon={true}
                       onChangeFormattedText={(text) => {
                         setState({...state, phonenumber: text});
                       }}
-                      autoFocus
+                      // autoFocus
                     />
                   </View>
-                  <Text style={{textAlign: 'center', color: 'grey'}}>
+
+                  <View>
+                    <View style={styles.subsubContainer}>
+                      <Image
+                        source={require('../../assets/images/gender.png')}
+                      />
+                      <Text style={styles.textStyle}>Specify your gender</Text>
+                      <Text style={styles.mandatoryText}>*</Text>
+                    </View>
+                    <View style={styles.sectionView}>
+                      <CommonDropdown
+                        itemData={state.occupationType}
+                        onValueChange={(value, index) =>
+                          handleOccupation(value, index)
+                        }
+                        value={state.occupationSelected}
+                        placeholderText={'Select'}
+                      />
+                      <View style={styles.iconView}>
+                        <Icon name="arrow-down" color="orange" size={15} />
+                      </View>
+                    </View>
+                  </View>
+
+                  <Text
+                    style={{
+                      textAlign: 'center',
+                      color: 'grey',
+                      paddingTop: 30,
+                    }}>
                     Please press "Submit" button for next page
                   </Text>
                   <View style={{alignItems: 'center'}}>
                     <ProceedButton
                       {...props}
+                      onPress={() =>
+                        props.navigation.navigate('LoanApplicationDocuments')
+                      }
                       routeScreenName="LoanApplicationDocuments"
                     />
                   </View>

@@ -12,11 +12,10 @@ import {Styles} from '../../utils/commonStyle';
 
 const ProceedButton = (props) => {
   return (
-    <TouchableOpacity
-      onPress={() => props.navigation.navigate(props.routeScreenName)}>
+    <TouchableOpacity onPress={props.onPress}>
       <Image
         source={require('../../assets/images/btn.png')}
-        style={{width: 150, height: 150}}
+        style={{width: 75, height: 75}}
         resizeMode="contain"
       />
     </TouchableOpacity>
