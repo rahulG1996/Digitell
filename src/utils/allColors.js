@@ -4,4 +4,5 @@ export const AllColor = {
   red: '#E92B25',
   purple: '#8338EC',
   grey: '#7488A7',
+  darkBlue: '#011724',
 };

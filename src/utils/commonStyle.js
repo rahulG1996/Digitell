@@ -1,11 +1,12 @@
 export const Styles = {
   container: {
     flex: 1,
+    backgroundColor: 'white',
   },
-  logoContainer : {
+  logoContainer: {
     position: 'absolute',
     width: '45%',
     alignItems: 'center',
     justifyContent: 'center',
-  }
+  },
 };

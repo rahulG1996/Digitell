@@ -414,7 +414,7 @@ const LoanApplicationForm = (props) => {
                     <ProceedButton
                       {...props}
                       onPress={() =>
-                        props.navigation.navigate('LoanApplicationDocuments')
+                        props.navigation.navigate('LoanApplicationType')
                       }
                       routeScreenName="LoanApplicationDocuments"
                     />

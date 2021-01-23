@@ -409,29 +409,6 @@ const LoanApplicationDocuments = (props) => {
                 </TouchableOpacity>
               </View>
 
-              <View style={styles.documentHeading}>
-                <View>
-                  <Image
-                    source={require('../../assets/images/loanIcon.png')}
-                    style={styles.documentIconStyle}
-                    resizeMode="contain"
-                  />
-                </View>
-                <View style={styles.documentTypeText}>
-                  <Text>Enter Loan Amount</Text>
-                </View>
-              </View>
-              <View style={styles.uploadDocContainer}>
-                <View style={[styles.input, {paddingBottom: 8}]}>
-                  <TextInput
-                    placeholder="Enter Here"
-                    keyboardType="numeric"
-                    onChangeText={(e) => onChange(e, 'loanAmount')}
-                    value={state.loanAmount}
-                  />
-                </View>
-              </View>
-
               <View style={{alignItems: 'center'}}>
                 {state.userImageResponse ? (
                   <View style={styles.uploadedDocument}>

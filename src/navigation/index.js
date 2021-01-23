@@ -9,6 +9,11 @@ import {useSelector} from 'react-redux';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import Dashboard from '../screens/Dashboard';
 import DrawerComponent from '../components/DrawerComponent';
+import Notifications from '../screens/Notifications';
+import UpdateProfile from '../screens/UpdateProfile';
+import Rating from '../screens/Rating';
+import LoanList from '../screens/LoanList';
+import LoanApplicationType from '../screens/LoanApplicationType';
 
 const Stack = createStackNavigator();
 
@@ -20,9 +25,13 @@ export default function Route() {
   function Home() {
     return (
       <Drawer.Navigator
-        drawerType="slide"
+        // drawerType="slide"
         drawerContent={(props) => <DrawerComponent {...props} />}>
         <Drawer.Screen name="Dashboard" component={Dashboard} />
+        <Drawer.Screen name="Notifications" component={Notifications} />
+        <Drawer.Screen name="UpdateProfile" component={UpdateProfile} />
+        <Drawer.Screen name="Rating" component={Rating} />
+        <Drawer.Screen name="LoanList" component={LoanList} />
       </Drawer.Navigator>
     );
   }
@@ -42,6 +51,10 @@ export default function Route() {
         <Stack.Screen
           name="RegistrationPayment"
           component={RegistrationPayment}
+        />
+        <Stack.Screen
+          name="LoanApplicationType"
+          component={LoanApplicationType}
         />
       </Stack.Navigator>
     );
