@@ -7,6 +7,7 @@ import LoginReducer from '../reducers/loginReducer';
 import CommonLoaderReducer from '../reducers/loaderReducer';
 import SignupReducer from '../reducers/signupReducer';
 import SaveLoanRequestReducer from '../reducers/loanRequestReducer';
+import ProfileReducer from '../reducers/profileReducer'
 
 const persistConfig = {
   key: 'root',
@@ -22,6 +23,7 @@ const rootReducer = combineReducers({
   CommonLoaderReducer,
   SignupReducer,
   SaveLoanRequestReducer,
+  ProfileReducer
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

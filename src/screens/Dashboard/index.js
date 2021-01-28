@@ -14,13 +14,17 @@ import UserCard from '../../components/UserCard';
 import Icon from 'react-native-vector-icons/AntDesign';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {useDispatch, useSelector} from 'react-redux';
+import * as profileAction from '../../redux/actions/profileAction';
+import * as loanAction from '../../redux/actions/loanRequestAction';
 
 const Dashboard = (props) => {
+  const dispatch = useDispatch();
   const customerId = useSelector((state) => state.LoginReducer.customerId);
 
   useEffect(() => {
-    console.warn('id', customerId);
-  });
+    dispatch(profileAction.getProfile(customerId));
+    dispatch(loanAction.getLoanList({customer_id: customerId}));
+  }, []);
 
   return (
     <View style={Styles.container}>

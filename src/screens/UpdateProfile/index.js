@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -22,10 +22,37 @@ import {
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import moment from 'moment';
 import BackgroundImage from '../../assets/images/background2.png';
+import {useSelector} from 'react-redux';
 
 const UpdateProfile = (props) => {
-  const [state, setState] = useState({phonenumber: '', dateone: '12-12-2020'});
+  const [state, setState] = useState({
+    phonenumber: '',
+    dateone: '12-12-2020',
+    editable: false,
+    firstName: '',
+    middleName: '',
+    lastName: '',
+    email: '',
+  });
   const [isDatePickerVisibleone, setDatePickerVisibilityone] = useState(false);
+
+  const profileData = useSelector((state) => state.ProfileReducer.profileData);
+
+  useEffect(() => {
+    console.warn('profileData', profileData);
+    if (profileData && profileData.status == 'success') {
+      let data = profileData.result[0];
+      setState({
+        ...state,
+        firstName: data.customer_name,
+        middleName: data.middle_name,
+        lastName: data.last_name,
+        email: data.email,
+        dateone: data.dob,
+        phonenumber: data.mobile,
+      });
+    }
+  }, [profileData]);
 
   const hideDatePickerone = () => {
     setDatePickerVisibilityone(false);
@@ -35,7 +62,7 @@ const UpdateProfile = (props) => {
   };
 
   const handleConfirmone = (date) => {
-    var a = moment(date).format('MM-DD-YYYY');
+    var a = moment(date).format('YYYY--MM-DD');
     setState({...state, dateone: a});
     hideDatePickerone();
   };
@@ -54,24 +81,44 @@ const UpdateProfile = (props) => {
           <View style={{paddingHorizontal: 20, alignItems: 'center'}}>
             <View style={{zIndex: 1}}>
               <Image source={UserImage} style={{width: 130, height: 130}} />
-              <View style={styles.updateImageTextContainer}>
+              <TouchableOpacity style={styles.updateImageTextContainer}>
                 <Text style={styles.updateImageText}>Change profile</Text>
-              </View>
+              </TouchableOpacity>
             </View>
             <View style={styles.boxShadow}>
               <View>
                 <Text style={{color: AllColor.blue}}>Personal Details</Text>
               </View>
               <View style={{marginTop: 5}}>
-                <TextInput style={styles.textInput} placeholder="First Name" />
-                <TextInput style={styles.textInput} placeholder="Middle Name" />
-                <TextInput style={styles.textInput} placeholder="Last Name" />
+                <TextInput
+                  style={styles.textInput}
+                  placeholder="First Name"
+                  editable={state.editable}
+                  value={state.firstName}
+                />
+                <TextInput
+                  style={styles.textInput}
+                  placeholder="Middle Name"
+                  editable={state.editable}
+                  value={state.middleName}
+                />
+                <TextInput
+                  style={styles.textInput}
+                  placeholder="Last Name"
+                  editable={state.editable}
+                  value={state.lastName}
+                />
               </View>
               <View>
                 <Text style={{color: AllColor.blue}}>Email Address</Text>
               </View>
               <View style={{marginTop: 5}}>
-                <TextInput style={styles.textInput} placeholder="Email" />
+                <TextInput
+                  style={styles.textInput}
+                  placeholder="Email"
+                  editable={state.editable}
+                  value={state.email}
+                />
               </View>
               <View>
                 <Text style={{color: AllColor.blue}}>Phone Number</Text>
@@ -117,9 +164,9 @@ const UpdateProfile = (props) => {
                     justifyContent: 'space-between',
                     alignItems: 'center',
                   }}
-                  onPress={showDatePickerone}>
+                  onPress={state.editable ? showDatePickerone : null}>
                   <Text
-                    onPress={showDatePickerone}
+                    onPress={state.editable ? showDatePickerone : null}
                     style={{color: 'grey', marginTop: 10}}>
                     {state.dateone}
                   </Text>

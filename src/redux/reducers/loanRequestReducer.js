@@ -1,19 +1,25 @@
 const initialState = {
-    saveLoanResponse: '',
-  };
-  
-  const SaveLoanRequestReducer = (state = initialState, action) => {
-    switch (action.type) {
-      case 'SAVE_LOAN_RESPONSE': {
-        return {
-          ...state,
-          saveLoanResponse: action.value,
-        };
-      }
-      default:
-        return state;
+  saveLoanResponse: '',
+  allLoanList: '',
+};
+
+const SaveLoanRequestReducer = (state = initialState, action) => {
+  switch (action.type) {
+    case 'SAVE_LOAN_RESPONSE': {
+      return {
+        ...state,
+        saveLoanResponse: action.value,
+      };
     }
-  };
-  
-  export default SaveLoanRequestReducer;
-  
+    case 'LOAN_DATA_LIST': {
+      return {
+        ...state,
+        allLoanList: action.value,
+      };
+    }
+    default:
+      return state;
+  }
+};
+
+export default SaveLoanRequestReducer;
