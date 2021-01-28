@@ -85,6 +85,9 @@ const Login = (props) => {
 
       props.navigation.navigate('LoanApplicationForm');
       dispatch(loginAction.setToken('token'));
+      dispatch(
+        loginAction.storeCustomerId(loginResponse.result[0].customer_id),
+      );
       dispatch(loginAction.emptyLoginData());
     } else if (
       Object.keys(loginResponse).length &&
@@ -102,6 +105,7 @@ const Login = (props) => {
       Object.keys(signupResponse).length &&
       signupResponse.status === 'success'
     ) {
+      dispatch(loginAction.storeCustomerId(signupResponse.result.customer_id));
       props.navigation.navigate('LoanApplicationForm');
     } else if (
       Object.keys(signupResponse).length &&
@@ -139,13 +143,14 @@ const Login = (props) => {
   const faliure = () => {
     setState({...state, showOtpModal: false});
     setTimeout(() => {
-      Toast.show('Otp Does not match');
+      ToastMessage('Otp Does not match');
     }, 1000);
   };
 
   const sentOtpData = () => {
-    if (state.phonenumber.length < 10) {
-      alert('Please enter Valid mobile number');
+    console.warn('phone', state.phonenumber.slice(3));
+    if (state.phonenumber.slice(3).length < 10) {
+      ToastMessage('Please enter Valid mobile number');
     } else {
       Keyboard.dismiss();
       fetch(
@@ -207,6 +212,7 @@ const Login = (props) => {
 
   const validateSignupFields = () => {
     let {userName1, password1, cPassword, email, phonenumber} = state;
+    let pattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if (!userName1) {
       ToastMessage('Please enter username');
       return false;
@@ -221,6 +227,9 @@ const Login = (props) => {
       return false;
     } else if (!email) {
       ToastMessage('Please enter Email');
+      return false;
+    } else if (email && !pattern.test(email)) {
+      ToastMessage('Please enter valid Email');
       return false;
     } else if (!phonenumber) {
       ToastMessage('Please enter Mobile number');
@@ -522,8 +531,7 @@ const Login = (props) => {
                           textTransform: 'capitalize',
                           textAlign: 'center',
                         }}>
-                        By pressing "Submit" you agree to our teram and
-                        condition
+                        By pressing "Submit" you agree to our term and condition
                       </Text>
                     </View>
                   </View>

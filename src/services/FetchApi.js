@@ -66,10 +66,12 @@ var NoAuthAPI = (apiName, apiMethod, data) => {
   return fetch(baseUrl + apiName, init)
     .then((response) =>
       response.json().then((responseData) => {
+        console.warn('res', responseData);
         return responseData;
       }),
     )
     .catch((err) => {
+      console.warn(err);
       setTimeout(() => {
         ToastMessage('Server encounter an error, please try after some time');
       }, 400);

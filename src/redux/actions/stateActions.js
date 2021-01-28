@@ -13,3 +13,17 @@ export function getCities(id) {
     dispatch({type: 'CITIES', value: getAllCities});
   });
 }
+
+export function getOccupation() {
+  return async (dispatch) => {
+    let occupationData = await NoAuthAPI('get_occupation', 'GET');
+    dispatch({type: 'OCCUPATION_DATA', value: occupationData});
+  };
+}
+
+export function getLoantypes() {
+  return async (dispatch) => {
+    let loanTypes = await NoAuthAPI('get_loan_type', 'GET');
+    dispatch({type: 'LOAN_TYPE', value: loanTypes});
+  };
+}

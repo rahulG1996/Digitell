@@ -30,8 +30,11 @@ const OtpModal = (props) => {
       )
         .then((response) =>
           response.json().then((responseData) => {
-            console.warn('responseData', responseData);
-            props.success(responseData);
+            if (responseData.Status === 'Error') {
+              props.faliure();
+            } else {
+              props.success(responseData);
+            }
           }),
         )
         .catch((err) => {

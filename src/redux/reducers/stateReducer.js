@@ -1,6 +1,8 @@
 const initialState = {
   allStates: '',
   allCities: '',
+  allOccupation: '',
+  allLoanTypes : ''
 };
 
 const StateReducer = (state = initialState, action) => {
@@ -13,13 +15,23 @@ const StateReducer = (state = initialState, action) => {
     }
 
     case 'CITIES': {
-      console.warn('redux', action.value);
       return {
         ...state,
         allCities: action.value,
       };
     }
-
+    case 'OCCUPATION_DATA': {
+      return {
+        ...state,
+        allOccupation: action.value,
+      };
+    }
+    case 'LOAN_TYPE': {
+      return {
+        ...state,
+        allLoanTypes: action.value,
+      };
+    }
     default:
       return state;
   }

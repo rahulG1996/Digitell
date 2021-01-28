@@ -7,6 +7,7 @@ import {
   TextInput,
   ImageBackground,
   Image,
+  Platform,
 } from 'react-native';
 import {Styles} from '../../utils/commonStyle';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
@@ -20,6 +21,11 @@ import ProceedButton from '../../components/ProceedButton';
 import {onChange} from 'react-native-reanimated';
 import {ActionSheet} from 'react-native-cross-actionsheet';
 import ImagePicker from 'react-native-image-crop-picker';
+import {ToastMessage} from '../../components/ToastMessage';
+import * as loanRequestAction from '../../redux/actions/loanRequestAction';
+import {useDispatch, useSelector} from 'react-redux';
+import Loader from '../../components/loader';
+import * as loadingAction from '../../redux/actions/loaderAction';
 
 const LoanApplicationDocuments = (props) => {
   const [state, setState] = useState({
@@ -34,25 +40,23 @@ const LoanApplicationDocuments = (props) => {
     adharFrontData: '',
     adharBackData: '',
   });
-  const openFiles = async () => {
-    try {
-      const res = await DocumentPicker.pick({
-        type: [DocumentPicker.types.images],
-      });
-      console.log(
-        res.uri,
-        res.type, // mime type
-        res.name,
-        res.size,
-      );
-    } catch (err) {
-      if (DocumentPicker.isCancel(err)) {
-        // User cancelled the picker, exit any dialogs or menus and move on
-      } else {
-        throw err;
-      }
+
+  const dispatch = useDispatch();
+
+  const isLoading = useSelector((state) => state.CommonLoaderReducer.isLoading);
+
+  const saveLoanResponse = useSelector(
+    (state) => state.SaveLoanRequestReducer.saveLoanResponse,
+  );
+
+  useEffect(() => {
+    if (saveLoanResponse && saveLoanResponse.status == 'success') {
+      setTimeout(() => {
+        ToastMessage(saveLoanResponse.result);
+        dispatch(loanRequestAction.emptyApplyLoanData());
+      }, 400);
     }
-  };
+  }, [saveLoanResponse]);
 
   const onChange = (value, type) => {
     let {panNo, adharNo, loanAmount} = state;
@@ -60,6 +64,13 @@ const LoanApplicationDocuments = (props) => {
       panNo = value.replace(/[^0-9A-Za-z]/g, '');
     } else if (type === 'adhar') {
       adharNo = value.replace(/[^0-9]/g, '');
+      let formattedText = adharNo.split(' ').join('');
+      if (formattedText.length > 0) {
+        formattedText = formattedText
+          .match(new RegExp('.{1,4}', 'g'))
+          .join(' ');
+      }
+      adharNo = formattedText;
     } else {
       loanAmount = value.replace(/[^0-9]/g, '');
     }
@@ -67,11 +78,11 @@ const LoanApplicationDocuments = (props) => {
   };
 
   const handleImage = (type) => {
-    console.warn('type', type);
     if (type === 'gallary') {
       ImagePicker.openPicker({
         width: 300,
         height: 400,
+        cropping: true,
       }).then((image) => {
         // console.warn(image);
         setState({...state, userImageResponse: image, showActionSheet: false});
@@ -80,6 +91,7 @@ const LoanApplicationDocuments = (props) => {
       ImagePicker.openCamera({
         width: 300,
         height: 400,
+        cropping: true,
       }).then((image) => {
         // console.warn(image);
         setState({...state, userImageResponse: image, showActionSheet: false});
@@ -92,6 +104,7 @@ const LoanApplicationDocuments = (props) => {
     await ImagePicker.openPicker({
       width: 300,
       height: 400,
+      cropping: true,
     }).then((image) => {
       if (type === 'panFront') {
         panFrontData = image;
@@ -113,7 +126,6 @@ const LoanApplicationDocuments = (props) => {
   };
 
   const captureImageDoc = async (type) => {
-    console.warn(type);
     let {panBackData, panFrontData, adharFrontData, adharBackData} = state;
     await ImagePicker.openCamera({
       width: 300,
@@ -138,6 +150,96 @@ const LoanApplicationDocuments = (props) => {
     });
   };
 
+  const validatingFields = () => {
+    let {
+      panNo,
+      adharNo,
+      panFrontData,
+      panBackData,
+      adharFrontData,
+      adharBackData,
+      userImageResponse,
+    } = state;
+    if (!panNo) {
+      ToastMessage('Please enter Pan Number');
+      return false;
+    } else if (panNo.length < 10) {
+      ToastMessage('Please enter valid Pan Number');
+      return false;
+    } else if (!adharNo) {
+      ToastMessage('Please enter Adhaar Number');
+      return false;
+    } else if (adharNo.length < 10) {
+      ToastMessage('Please enter valid Adhaar Number');
+      return false;
+    } else if (!panFrontData) {
+      ToastMessage('Please upload front pan ');
+      return false;
+    } else if (!panBackData) {
+      ToastMessage('Please upload back pan ');
+      return false;
+    } else if (!adharFrontData) {
+      ToastMessage('Please upload front adhaar');
+      return false;
+    } else if (!adharBackData) {
+      ToastMessage('Please upload back adhaar ');
+      return false;
+    } else if (!userImageResponse) {
+      ToastMessage('Please upload your photo');
+      return false;
+    } else return true;
+  };
+
+  const submitLoanRequest = () => {
+    let {
+      panNo,
+      adharNo,
+      panFrontData,
+      panBackData,
+      adharFrontData,
+      adharBackData,
+      userImageResponse,
+    } = state;
+    let data = props.route.params.data;
+    if (validatingFields()) {
+      let loanData = {
+        ref_customer_id: '1',
+        first_name: data.firstName,
+        middle_name: data.middleName,
+        last_name: data.lastName,
+        gender: data.gender,
+        dob: data.dob,
+        address_line_1: data.houseNo,
+        address_line_2: data.landMark,
+        pincode: data.pincode,
+        state_id: data.state,
+        city_id: data.city,
+        ref_loan_type_id: data.selectedLoanId,
+        loan_amount: data.loanAmount,
+        ref_occupation_id: data.occupation,
+        pan_no: panNo,
+        aadhar_no: adharNo.split(' ').join(''),
+        pan_front_file: fileResponse(panFrontData),
+        pan_back_file: fileResponse(panBackData),
+        aadhar_front_file: fileResponse(adharFrontData),
+        aadhar_back_file: fileResponse(adharBackData),
+        customer_image: fileResponse(userImageResponse),
+      };
+      console.warn(JSON.stringify(loanData, undefined, 2));
+      dispatch(loanRequestAction.applyLoan(loanData));
+      dispatch(loadingAction.commaonLoader(true));
+    }
+  };
+
+  const fileResponse = (data) => {
+    let fileResponseData = {
+      uri: Platform.OS == 'ios' ? `file:///${data.path}` : data.path,
+      type: data.mime,
+      name: data.path.split('/')[data.path.split('/').length - 1],
+    };
+    return fileResponseData;
+  };
+
   return (
     <View style={Styles.container}>
       <KeyboardAwareScrollView style={{flex: 1}}>
@@ -157,7 +259,7 @@ const LoanApplicationDocuments = (props) => {
         </View>
         <View style={styles.formContainer}>
           <View style={{width: '90%'}}>
-            <Text style={styles.loanText}>Loan Applicatio Request</Text>
+            <Text style={styles.loanText}>Loan Application Request</Text>
             {/* <RegistrationPageIndicator number={2} completeSteps={1} /> */}
           </View>
           <View style={styles.mainContainer}>
@@ -186,7 +288,7 @@ const LoanApplicationDocuments = (props) => {
               </View>
 
               <View style={styles.documentHeading}>
-                <Text>Upload Front Portion</Text>
+                <Text>Upload Front Portion ( PAN )</Text>
               </View>
 
               {state.panFrontData ? (
@@ -236,7 +338,7 @@ const LoanApplicationDocuments = (props) => {
               </View>
 
               <View style={styles.documentHeading}>
-                <Text>Upload Back Portion</Text>
+                <Text>Upload Back Portion ( PAN )</Text>
               </View>
 
               {state.panBackData ? (
@@ -269,7 +371,7 @@ const LoanApplicationDocuments = (props) => {
                 <Text>or</Text>
                 <TouchableOpacity
                   style={styles.uploadBtn}
-                  onPress={() => captureImageDoc('panback')}>
+                  onPress={() => captureImageDoc('panBack')}>
                   <View>
                     <Image
                       source={require('../../assets/images/camera.png')}
@@ -304,13 +406,13 @@ const LoanApplicationDocuments = (props) => {
                     onChangeText={(e) => onChange(e, 'adhar')}
                     value={state.adharNo}
                     keyboardType="numeric"
-                    maxLength={12}
+                    maxLength={14}
                   />
                 </View>
               </View>
 
               <View style={styles.documentHeading}>
-                <Text>Upload Front Portion</Text>
+                <Text>Upload Front Portion ( ADHAAR )</Text>
               </View>
 
               {state.adharFrontData ? (
@@ -360,7 +462,7 @@ const LoanApplicationDocuments = (props) => {
               </View>
 
               <View style={styles.documentHeading}>
-                <Text>Upload Back Portion</Text>
+                <Text>Upload Back Portion ( ADHAAR )</Text>
               </View>
 
               {state.adharBackData ? (
@@ -459,6 +561,7 @@ const LoanApplicationDocuments = (props) => {
                   <ProceedButton
                     routeScreenName={'RegistrationPayment'}
                     {...props}
+                    onPress={submitLoanRequest}
                   />
                 </View>
               </View>
@@ -467,6 +570,7 @@ const LoanApplicationDocuments = (props) => {
         </View>
       </KeyboardAwareScrollView>
       {state.showActionSheet ? <ShowSheet handleImage={handleImage} /> : null}
+      {isLoading ? <Loader /> : null}
     </View>
   );
 };

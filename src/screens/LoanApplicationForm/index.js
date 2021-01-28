@@ -23,6 +23,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import * as stateActions from '../../redux/actions/stateActions';
 import SearchableDropdown from 'react-native-searchable-dropdown';
 import PhoneInput from 'react-native-phone-number-input';
+import {ToastMessage} from '../../components/ToastMessage';
 
 const LoanApplicationForm = (props) => {
   const [isDatePickerVisibleone, setDatePickerVisibilityone] = useState(false);
@@ -38,7 +39,9 @@ const LoanApplicationForm = (props) => {
     genderType: [
       {value: 'Male', label: 'Male'},
       {value: 'Female', label: 'Female'},
+      {value: 'Transgender', label: 'Transgender'},
     ],
+    gender: 'Male',
     stateType: [
       {id: 'delhi', name: 'delhi'},
       {id: 'mumbai', name: 'mumbai'},
@@ -46,11 +49,14 @@ const LoanApplicationForm = (props) => {
       {id: 'mumbai', name: 'mumbai'},
     ],
     cityType: [{value: '', label: ''}],
-    occupationType: [
-      {label: 'Government', value: 'Government'},
-      {label: 'Private', value: 'Private'},
-    ],
+    occupationType: [{label: '', value: ''}],
     occupationSelected: '',
+    firstName: '',
+    middleName: '',
+    lastName: '',
+    landMark: '',
+    houseNo: '',
+    pincode: '',
   });
 
   const dispatch = useDispatch();
@@ -59,8 +65,13 @@ const LoanApplicationForm = (props) => {
 
   const allCities = useSelector((state) => state.StateReducer.allCities);
 
+  const allOccupation = useSelector(
+    (state) => state.StateReducer.allOccupation,
+  );
+
   useEffect(() => {
     dispatch(stateActions.getStates());
+    dispatch(stateActions.getOccupation());
   }, []);
 
   useEffect(() => {
@@ -83,6 +94,16 @@ const LoanApplicationForm = (props) => {
     setState({...state, cityType: data});
   }, [allCities]);
 
+  useEffect(() => {
+    let data = [];
+    allOccupation &&
+      allOccupation.result &&
+      allOccupation.result.map((item) => {
+        data.push({value: item.occupation_id, label: item.occupation_name});
+      });
+    setState({...state, occupationType: data});
+  }, [allOccupation]);
+
   const hideDatePickerone = () => {
     setDatePickerVisibilityone(false);
   };
@@ -96,12 +117,11 @@ const LoanApplicationForm = (props) => {
     hideDatePickerone();
   };
 
-  const handleLeaves = (value, index) => {
+  const handleGender = (value, index) => {
     if (index) {
       setState({
         ...state,
-        leaveSelected: value,
-        leaveId: index,
+        gender: value,
       });
     }
   };
@@ -130,6 +150,123 @@ const LoanApplicationForm = (props) => {
       citySelected: value.name,
       cityId: value.id,
     });
+  };
+
+  onChange = (value, type) => {
+    let {firstName, lastName, middleName, houseNo, pincode, landMark} = state;
+
+    if (type === 'firstName') {
+      firstName = value.replace(/[^A-Za-z]/g, '');
+    } else if (type === 'lastName') {
+      lastName = value.replace(/[^A-Za-z]/g, '');
+    } else if (type === 'middleName') {
+      middleName = value.replace(/[^A-Za-z]/g, '');
+    } else if (type === 'pincode') {
+      pincode = value.replace(/[^0-9]/g, '');
+    } else if (type === 'houseNo') {
+      houseNo = value.replace(/[^0-9A-Za-z]/g, '');
+    } else if (type === 'landMark') {
+      landMark = value.replace(/[^0-9A-Za-z]/g, '');
+    }
+
+    setState({
+      ...state,
+      firstName,
+      middleName,
+      lastName,
+      houseNo,
+      pincode,
+      landMark,
+    });
+  };
+
+  const validateAllFields = () => {
+    let {
+      firstName,
+      lastName,
+      middleName,
+      houseNo,
+      pincode,
+      landMark,
+      gender,
+      phonenumber,
+      occupationSelected,
+      citySelected,
+      stateSelected,
+      dateone,
+    } = state;
+    if (!firstName) {
+      ToastMessage('Please enter First Name');
+      return false;
+    } else if (!lastName) {
+      ToastMessage('Please enter Last Name');
+      return false;
+    } else if (dateone == 'Select DOB') {
+      ToastMessage('Please select DOB');
+      return false;
+    } else if (!gender) {
+      ToastMessage('Please choose state');
+      return false;
+    } else if (stateSelected == 'State') {
+      ToastMessage('Please choose state');
+      return false;
+    } else if (citySelected == 'City') {
+      ToastMessage('Please chooose city');
+      return false;
+    } else if (!houseNo) {
+      ToastMessage('Please enter house no.');
+      return false;
+    } else if (!pincode) {
+      ToastMessage('Please enter pincode');
+      return false;
+    } else if (!landMark) {
+      ToastMessage('Please enter landmark');
+      return false;
+    } else if (!phonenumber) {
+      ToastMessage('Please enter phone number');
+      return false;
+    } else if (phonenumber && phonenumber.slice(3).length < 10) {
+      ToastMessage('Please enter valid phone number');
+      return false;
+    } else if (!occupationSelected) {
+      ToastMessage('Please select your occupation');
+      return false;
+    } else return true;
+  };
+
+  const handlePersonalDataInfo = () => {
+    let {
+      firstName,
+      lastName,
+      middleName,
+      houseNo,
+      pincode,
+      landMark,
+      gender,
+      phonenumber,
+      occupationSelected,
+      citySelected,
+      stateSelected,
+      dateone,
+    } = state;
+    if (validateAllFields()) {
+      props.navigation.navigate('LoanApplicationType', {
+        data: {
+          firstName: firstName,
+          middleName: middleName,
+          lastName: lastName,
+          dob: dateone,
+          gender: gender,
+          state: stateSelected,
+          city: citySelected,
+          pincode: pincode,
+          house: houseNo,
+          landMark: landMark,
+          phonenumber: phonenumber,
+          occupation: occupationSelected,
+        },
+      });
+    }
   };
 
   return (
@@ -172,13 +309,28 @@ const LoanApplicationForm = (props) => {
                 <Image source={require('../../assets/images/i.png')} />
               </View>
               <View style={{marginTop: 5}}>
-                <TextInput style={styles.textInput} placeholder="First Name" />
-                <TextInput style={styles.textInput} placeholder="Middle Name" />
-                <TextInput style={styles.textInput} placeholder="Last Name" />
+                <TextInput
+                  style={styles.textInput}
+                  placeholder="First Name"
+                  onChangeText={(e) => onChange(e, 'firstName')}
+                  value={state.firstName}
+                />
+                <TextInput
+                  style={styles.textInput}
+                  placeholder="Middle Name"
+                  onChangeText={(e) => onChange(e, 'middleName')}
+                  value={state.middleName}
+                />
+                <TextInput
+                  style={styles.textInput}
+                  placeholder="Last Name"
+                  onChangeText={(e) => onChange(e, 'lastName')}
+                  value={state.lastName}
+                />
               </View>
               <View
                 style={{
-                  borderBottomColor: 'grey',
+                  borderBottomColor: '#e2e2e2',
                   borderBottomWidth: 0.7,
                   padding: 5,
                 }}>
@@ -223,9 +375,9 @@ const LoanApplicationForm = (props) => {
                     <CommonDropdown
                       itemData={state.genderType}
                       onValueChange={(value, index) =>
-                        handleLeaves(value, index)
+                        handleGender(value, index)
                       }
-                      value={state.leaveSelected}
+                      value={state.gender}
                       placeholderText={
                         state.placeHolderData ? state.placeHolderData : 'Gender'
                       }
@@ -254,6 +406,7 @@ const LoanApplicationForm = (props) => {
                       textInputStyle={{
                         padding: 12,
                         borderBottomWidth: 0.7,
+                        borderBottomColor: '#e2e2e2',
                       }}
                       itemStyle={{
                         padding: 10,
@@ -293,7 +446,8 @@ const LoanApplicationForm = (props) => {
                       textInputStyle={{
                         padding: 12,
                         borderBottomWidth: 0.7,
-                        width:'100%'
+                        width: '100%',
+                        borderBottomColor: '#e2e2e2',
                       }}
                       itemStyle={{
                         padding: 10,
@@ -324,12 +478,25 @@ const LoanApplicationForm = (props) => {
                       <Icon name="arrow-down" color="orange" size={15} />
                     </View>
                   </View>
-                  <TextInput style={styles.textInput} placeholder="Landmark" />
+                  <TextInput
+                    style={styles.textInput}
+                    placeholder="Landmark"
+                    onChangeText={(e) => onChange(e, 'landMark')}
+                    value={state.landMark}
+                  />
                   <TextInput
                     style={styles.textInput}
                     placeholder="House/Flat/Apartment no."
+                    onChangeText={(e) => onChange(e, 'houseNo')}
+                    value={state.houseNo}
                   />
-                  <TextInput style={styles.textInput} placeholder="PIN" />
+                  <TextInput
+                    style={styles.textInput}
+                    placeholder="Pincode"
+                    onChangeText={(e) => onChange(e, 'pincode')}
+                    value={state.pincode}
+                    keyboardType="numeric"
+                  />
                   <View
                     style={{
                       paddingVertical: 10,
@@ -360,10 +527,12 @@ const LoanApplicationForm = (props) => {
                         backgroundColor: 'white',
                         borderBottomWidth: 1,
                         height: 50,
+                        borderBottomColor: '#e2e2e2',
                       }}
                       textContainerStyle={{
                         backgroundColor: 'white',
                         borderLeftWidth: 1,
+                        borderLeftColor: '#e2e2e2',
                       }}
                       layout="second"
                       textInputProps={{
@@ -384,7 +553,9 @@ const LoanApplicationForm = (props) => {
                       <Image
                         source={require('../../assets/images/gender.png')}
                       />
-                      <Text style={styles.textStyle}>Specify your gender</Text>
+                      <Text style={styles.textStyle}>
+                        Specify your Occupation
+                      </Text>
                       <Text style={styles.mandatoryText}>*</Text>
                     </View>
                     <View style={styles.sectionView}>
@@ -413,9 +584,7 @@ const LoanApplicationForm = (props) => {
                   <View style={{alignItems: 'center'}}>
                     <ProceedButton
                       {...props}
-                      onPress={() =>
-                        props.navigation.navigate('LoanApplicationType')
-                      }
+                      onPress={handlePersonalDataInfo}
                       routeScreenName="LoanApplicationDocuments"
                     />
                   </View>
@@ -456,7 +625,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     borderBottomWidth: 0.7,
-    borderBottomColor: 'grey',
+    borderBottomColor: '#e2e2e2',
     marginVertical: 10,
     paddingBottom: 10,
   },

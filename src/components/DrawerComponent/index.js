@@ -1,5 +1,12 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, Image, StyleSheet} from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  Alert,
+} from 'react-native';
 import * as loginAction from '../../redux/actions/loginAction';
 import {useDispatch} from 'react-redux';
 import NotificationIcon from '../../assets/images/notification.png';
@@ -20,10 +27,28 @@ const DrawerComponent = (props) => {
     } else if (type === 'rating') {
       navigation.navigate('Rating');
     } else if (type === 'profile') {
-      navigation.navigate('UpdatedProfile');
+      navigation.navigate('UpdateProfile');
     } else if (type === 'loanList') {
       navigation.navigate('LoanList');
     }
+  };
+
+  const logout = () => {
+    props.navigation.toggleDrawer();
+    Alert.alert('Digitell', 'Are you sure you want to logout', [
+      {
+        text: 'Cancel',
+        onPress: () => console.log('Cancel Pressed'),
+        style: 'cancel',
+      },
+      {
+        text: 'OK',
+        onPress: () => {
+          dispatch(loginAction.setToken(null));
+          dispatch(loginAction.storeCustomerId(null));
+        },
+      },
+    ]);
   };
 
   return (
@@ -91,9 +116,7 @@ const DrawerComponent = (props) => {
           </TouchableOpacity>
         </View>
         <View style={{alignItems: 'center'}}>
-          <TouchableOpacity
-            style={styles.logoutBtn}
-            onPress={() => dispatch(loginAction.setToken(null))}>
+          <TouchableOpacity style={styles.logoutBtn} onPress={logout}>
             <Text style={{color: 'white'}}>Logout</Text>
           </TouchableOpacity>
           <View

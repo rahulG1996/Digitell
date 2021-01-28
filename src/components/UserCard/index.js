@@ -10,7 +10,7 @@ const UserCard = (props) => {
   return (
     <ImageBackground
       source={Banner}
-      style={{width: '100%', height: 140}}
+      style={{width: '100%', paddingBottom:20}}
       imageStyle={{borderRadius: 20}}>
       <View
         style={{

@@ -24,3 +24,9 @@ export function setToken(value) {
     dispatch({type: 'USER_TOKEN', value: value});
   };
 }
+
+export function storeCustomerId(id) {
+  return (dispatch) => {
+    dispatch({type: 'CUSTOMER_ID', value: id});
+  };
+}

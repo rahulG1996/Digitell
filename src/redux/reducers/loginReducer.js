@@ -1,6 +1,7 @@
 const initialState = {
   loginResponse: '',
   userToken: null,
+  customerId: null,
 };
 
 const LoginReducer = (state = initialState, action) => {
@@ -16,6 +17,13 @@ const LoginReducer = (state = initialState, action) => {
       return {
         ...state,
         userToken: action.value,
+      };
+    }
+
+    case 'CUSTOMER_ID': {
+      return {
+        ...state,
+        customerId: action.value,
       };
     }
 

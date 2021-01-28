@@ -6,6 +6,7 @@ import StateReducer from '../reducers/stateReducer';
 import LoginReducer from '../reducers/loginReducer';
 import CommonLoaderReducer from '../reducers/loaderReducer';
 import SignupReducer from '../reducers/signupReducer';
+import SaveLoanRequestReducer from '../reducers/loanRequestReducer';
 
 const persistConfig = {
   key: 'root',
@@ -20,6 +21,7 @@ const rootReducer = combineReducers({
   LoginReducer,
   CommonLoaderReducer,
   SignupReducer,
+  SaveLoanRequestReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
