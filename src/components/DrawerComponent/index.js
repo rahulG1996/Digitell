@@ -8,7 +8,7 @@ import {
   Alert,
 } from 'react-native';
 import * as loginAction from '../../redux/actions/loginAction';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import NotificationIcon from '../../assets/images/notification.png';
 import UserIcon from '../../assets/images/dummyUser.png';
 import LoanIcon from '../../assets/images/loan.png';
@@ -18,6 +18,8 @@ import {AllColor} from '../../utils/allColors';
 
 const DrawerComponent = (props) => {
   const dispatch = useDispatch();
+
+  const profileData = useSelector((state) => state.ProfileReducer.profileData);
 
   const handleNavigation = (type) => {
     props.navigation.toggleDrawer();
@@ -55,66 +57,76 @@ const DrawerComponent = (props) => {
     <View style={Styles.container}>
       <View style={{backgroundColor: '#FB5607', height: 8}} />
       <View style={{flex: 1, justifyContent: 'space-between'}}>
-        <View>
-          <TouchableOpacity
-            style={styles.rowContainer}
-            onPress={() => handleNavigation('profile')}>
-            <View style={styles.rowLeft}>
-              <Image source={UserIcon} style={{width: 30, height: 30}} />
-            </View>
-            <View style={styles.rowRight}>
-              <Text style={{fontWeight: 'bold'}}>Hi Rahul Gupta</Text>
-              <Text style={{paddingVertical: 5, fontSize: 12}}>
-                Rg3257@gmail.com
-              </Text>
-              <Text style={{color: AllColor.blue, fontSize: 12}}>
-                View/Edit Profile
-              </Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.rowContainer}
-            onPress={() => handleNavigation('loanList')}>
-            <View style={styles.rowLeft}>
-              <Image
-                source={LoanIcon}
-                style={styles.icons}
-                resizeMode="contain"
-              />
-            </View>
-            <View style={styles.rowRight}>
-              <Text style={{fontWeight: 'bold'}}>Request Loan List</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.rowContainer}
-            onPress={() => handleNavigation('notification')}>
-            <View style={styles.rowLeft}>
-              <Image
-                source={NotificationIcon}
-                style={styles.icons}
-                resizeMode="contain"
-              />
-            </View>
-            <View style={styles.rowRight}>
-              <Text style={{fontWeight: 'bold'}}>Notifications</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.rowContainer}
-            onPress={() => handleNavigation('rating')}>
-            <View style={styles.rowLeft}>
-              <Image
-                source={RatingIcon}
-                style={styles.icons}
-                resizeMode="contain"
-              />
-            </View>
-            <View style={styles.rowRight}>
-              <Text style={{fontWeight: 'bold'}}>Rate Us</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
+        {Object.keys(profileData).length ? (
+          <View>
+            <TouchableOpacity
+              style={styles.rowContainer}
+              onPress={() => handleNavigation('profile')}>
+              <View style={styles.rowLeft}>
+                <Image source={UserIcon} style={{width: 30, height: 30}} />
+              </View>
+              <View style={styles.rowRight}>
+                <Text style={{fontWeight: 'bold'}} numberOfLines={1}>
+                  {' '}
+                  {'MR. ' +
+                    profileData.result[0].customer_name +
+                    ' ' +
+                    profileData.result[0].middle_name +
+                    ' ' +
+                    profileData.result[0].last_name}
+                </Text>
+                <Text style={{paddingVertical: 5, fontSize: 12}}>
+                  {profileData.result[0].email}
+                </Text>
+                <Text style={{color: AllColor.blue, fontSize: 12}}>
+                  View/Edit Profile
+                </Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.rowContainer}
+              onPress={() => handleNavigation('loanList')}>
+              <View style={styles.rowLeft}>
+                <Image
+                  source={LoanIcon}
+                  style={styles.icons}
+                  resizeMode="contain"
+                />
+              </View>
+              <View style={styles.rowRight}>
+                <Text style={{fontWeight: 'bold'}}>Request Loan List</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.rowContainer}
+              onPress={() => handleNavigation('notification')}>
+              <View style={styles.rowLeft}>
+                <Image
+                  source={NotificationIcon}
+                  style={styles.icons}
+                  resizeMode="contain"
+                />
+              </View>
+              <View style={styles.rowRight}>
+                <Text style={{fontWeight: 'bold'}}>Notifications</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.rowContainer}
+              onPress={() => handleNavigation('rating')}>
+              <View style={styles.rowLeft}>
+                <Image
+                  source={RatingIcon}
+                  style={styles.icons}
+                  resizeMode="contain"
+                />
+              </View>
+              <View style={styles.rowRight}>
+                <Text style={{fontWeight: 'bold'}}>Rate Us</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        ) : null}
         <View style={{alignItems: 'center'}}>
           <TouchableOpacity style={styles.logoutBtn} onPress={logout}>
             <Text style={{color: 'white'}}>Logout</Text>

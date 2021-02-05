@@ -1,19 +1,25 @@
 const initialState = {
-    profileData: false,
-  };
-  
-  const ProfileReducer = (state = initialState, action) => {
-    switch (action.type) {
-      case 'PROFILE_DATA': {
-        return {
-          ...state,
-          profileData: action.value,
-        };
-      }
-      default:
-        return state;
+  profileData: false,
+  updateProfileResponse: '',
+};
+
+const ProfileReducer = (state = initialState, action) => {
+  switch (action.type) {
+    case 'PROFILE_DATA': {
+      return {
+        ...state,
+        profileData: action.value,
+      };
     }
-  };
-  
-  export default ProfileReducer;
-  
+    case 'UPDATE_PROFILE_DATA': {
+      return {
+        ...state,
+        updateProfileResponse: action.value,
+      };
+    }
+    default:
+      return state;
+  }
+};
+
+export default ProfileReducer;

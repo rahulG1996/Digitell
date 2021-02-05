@@ -26,6 +26,7 @@ import * as loanRequestAction from '../../redux/actions/loanRequestAction';
 import {useDispatch, useSelector} from 'react-redux';
 import Loader from '../../components/loader';
 import * as loadingAction from '../../redux/actions/loaderAction';
+import * as paymentAction from '../../redux/actions/paymentAction';
 
 const LoanApplicationDocuments = (props) => {
   const [state, setState] = useState({
@@ -49,14 +50,44 @@ const LoanApplicationDocuments = (props) => {
     (state) => state.SaveLoanRequestReducer.saveLoanResponse,
   );
 
+  const customerId = useSelector((state) => state.LoginReducer.customerId);
+
+  const paymentRequestResponse = useSelector(
+    (state) => state.PaymentReducer.paymentRequestResponse,
+  );
+
   useEffect(() => {
     if (saveLoanResponse && saveLoanResponse.status == 'success') {
       setTimeout(() => {
         ToastMessage(saveLoanResponse.result);
+        if (props.route.params.comeFrom == 'Login') {
+          let data = {
+            amount: '100',
+            currency: 'INR',
+            name: 'vasu',
+            email: 'vasu.mar0703@gmail.com',
+            country_code: '91',
+            national_number: '9891586442',
+            return_url:
+              'https://www.zettabron.com/digitell/index.php/api/payment_success',
+          };
+          dispatch(paymentAction.sentPaymentRequest(data));
+        } else {
+          props.navigation.navigate('Dashboard');
+        }
+
         dispatch(loanRequestAction.emptyApplyLoanData());
       }, 400);
     }
   }, [saveLoanResponse]);
+
+  useEffect(() => {
+    if (Object.keys(paymentRequestResponse).length) {
+      props.navigation.navigate('RegistrationPayment', {
+        response: paymentRequestResponse.order,
+      });
+    }
+  }, [paymentRequestResponse]);
 
   const onChange = (value, type) => {
     let {panNo, adharNo, loanAmount} = state;
@@ -203,7 +234,7 @@ const LoanApplicationDocuments = (props) => {
     let data = props.route.params.data;
     if (validatingFields()) {
       let loanData = {
-        ref_customer_id: '1',
+        ref_customer_id: customerId,
         first_name: data.firstName,
         middle_name: data.middleName,
         last_name: data.lastName,
@@ -538,25 +569,39 @@ const LoanApplicationDocuments = (props) => {
                     </Text>
                   </View>
                 </TouchableOpacity>
-                <Text style={{color: AllColor.orange}}>
-                  Proceed to pay the registration charge
-                </Text>
-                <Text
-                  style={{
-                    color: AllColor.blue,
-                    fontSize: 22,
-                    paddingVertical: 5,
-                  }}>
-                  "RS. 100"
-                </Text>
-                <Text
-                  style={{
-                    textAlign: 'center',
-                    paddingVertical: 10,
-                    color: AllColor.grey,
-                  }}>
-                  Please press "Submit" button to proceed the payment
-                </Text>
+                {props.route.params &&
+                props.route.params.comeFrom == 'Login' ? (
+                  <View>
+                    <Text style={{color: AllColor.orange}}>
+                      Proceed to pay the registration charge
+                    </Text>
+                    <Text
+                      style={{
+                        color: AllColor.blue,
+                        fontSize: 22,
+                        paddingVertical: 5,
+                      }}>
+                      "RS. 100"
+                    </Text>
+                    <Text
+                      style={{
+                        textAlign: 'center',
+                        paddingVertical: 10,
+                        color: AllColor.grey,
+                      }}>
+                      Please press "Submit" button to proceed the payment
+                    </Text>
+                  </View>
+                ) : (
+                  <Text
+                    style={{
+                      textAlign: 'center',
+                      paddingVertical: 10,
+                      color: AllColor.grey,
+                    }}>
+                    Please press "Submit" button to Submit loan request
+                  </Text>
+                )}
                 <View>
                   <ProceedButton
                     routeScreenName={'RegistrationPayment'}

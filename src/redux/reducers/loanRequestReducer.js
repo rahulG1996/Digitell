@@ -1,6 +1,7 @@
 const initialState = {
   saveLoanResponse: '',
   allLoanList: '',
+  trackLoanStatus : ''
 };
 
 const SaveLoanRequestReducer = (state = initialState, action) => {
@@ -15,6 +16,12 @@ const SaveLoanRequestReducer = (state = initialState, action) => {
       return {
         ...state,
         allLoanList: action.value,
+      };
+    }
+    case 'LOAN_STATUS': {
+      return {
+        ...state,
+        trackLoanStatus: action.value,
       };
     }
     default:

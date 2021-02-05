@@ -106,7 +106,9 @@ const Login = (props) => {
       signupResponse.status === 'success'
     ) {
       dispatch(loginAction.storeCustomerId(signupResponse.result.customer_id));
-      props.navigation.navigate('LoanApplicationForm');
+      props.navigation.navigate('LoanApplicationForm', {
+        comeFrom: 'Login',
+      });
     } else if (
       Object.keys(signupResponse).length &&
       signupResponse.status === 'Failure'
@@ -148,7 +150,6 @@ const Login = (props) => {
   };
 
   const sentOtpData = () => {
-    console.warn('phone', state.phonenumber.slice(3));
     if (state.phonenumber.slice(3).length < 10) {
       ToastMessage('Please enter Valid mobile number');
     } else {
@@ -380,7 +381,11 @@ const Login = (props) => {
                       />
                     </View>
                     <View style={{width: '50%', alignItems: 'flex-end'}}>
-                      <Text style={{color: AllColor.purple}}>
+                      <Text
+                        style={{color: AllColor.purple}}
+                        onPress={() =>
+                          props.navigation.navigate('ForgotPassword')
+                        }>
                         Forgot Password ?
                       </Text>
                     </View>

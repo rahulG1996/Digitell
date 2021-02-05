@@ -71,10 +71,10 @@ var NoAuthAPI = (apiName, apiMethod, data) => {
       }),
     )
     .catch((err) => {
-      console.warn(err);
-      setTimeout(() => {
-        ToastMessage('Server encounter an error, please try after some time');
-      }, 400);
+      console.warn('error', err);
+      // setTimeout(() => {
+      //   ToastMessage('Server encounter an error, please try after some time');
+      // }, 400);
       return false;
     });
 };

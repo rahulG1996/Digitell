@@ -22,6 +22,10 @@ const OtpModal = (props) => {
     setOtpInput(otp);
   };
 
+  useEffect(() => {
+    console.warn('proprs', props.otpResponse);
+  });
+
   const verifyOtp = () => {
     if (otpFromInupt.length < 6) {
     } else {
@@ -30,6 +34,7 @@ const OtpModal = (props) => {
       )
         .then((response) =>
           response.json().then((responseData) => {
+            console.warn('otp', responseData);
             if (responseData.Status === 'Error') {
               props.faliure();
             } else {

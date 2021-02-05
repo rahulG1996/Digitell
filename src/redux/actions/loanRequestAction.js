@@ -32,3 +32,15 @@ export function emptyApplyLoanData() {
     dispatch({type: 'SAVE_LOAN_RESPONSE', value: ''});
   };
 }
+
+export function getLoanStatus(data) {
+  return async (dispatch) => {
+    let loanStatus = await NoAuthAPI('get_loan_status', 'POST', data);
+    if (!loanStatus) {
+      dispatch({type: 'LOADER', value: false});
+    } else {
+      dispatch({type: 'LOAN_STATUS', value: loanStatus});
+      dispatch({type: 'LOADER', value: false});
+    }
+  };
+}

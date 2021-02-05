@@ -104,7 +104,10 @@ const LoanList = (props) => {
                     renderItem={({item, index}) => renderLoanList(item, index)}
                   />
                 ) : (
-                  <Text>No data Found</Text>
+                  <Text
+                    style={{color: 'white', fontSize: 18, paddingVertical: 10}}>
+                    No data Found
+                  </Text>
                 )
               ) : (
                 <ActivityIndicator />

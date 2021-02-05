@@ -264,6 +264,7 @@ const LoanApplicationForm = (props) => {
           landMark: landMark,
           phonenumber: phonenumber,
           occupation: occupationSelected,
+          comeFrom : props.route.params.comeFrom
         },
       });
     }

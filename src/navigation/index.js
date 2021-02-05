@@ -14,6 +14,8 @@ import UpdateProfile from '../screens/UpdateProfile';
 import Rating from '../screens/Rating';
 import LoanList from '../screens/LoanList';
 import LoanApplicationType from '../screens/LoanApplicationType';
+import ForgotPassword from '../screens/ForgotPassword';
+import ResetPassword from '../screens/ResetPassword';
 
 const Stack = createStackNavigator();
 
@@ -24,14 +26,41 @@ export default function Route() {
 
   function Home() {
     return (
-      <Drawer.Navigator
+      <Stack.Navigator
+        headerMode="none"
         // drawerType="slide"
+        // drawerContent={(props) => <DrawerComponent {...props} />}
+      >
+        <Stack.Screen name="Dashboard" component={DashboardScreen} />
+        <Stack.Screen name="Notifications" component={Notifications} />
+        <Stack.Screen name="UpdateProfile" component={UpdateProfile} />
+        <Stack.Screen name="Rating" component={Rating} />
+        <Stack.Screen name="LoanList" component={LoanList} />
+        <Stack.Screen
+          name="LoanApplicationForm"
+          component={LoanApplicationForm}
+        />
+        <Stack.Screen
+          name="LoanApplicationDocuments"
+          component={LoanApplicationDocuments}
+        />
+        <Stack.Screen
+          name="RegistrationPayment"
+          component={RegistrationPayment}
+        />
+        <Stack.Screen
+          name="LoanApplicationType"
+          component={LoanApplicationType}
+        />
+      </Stack.Navigator>
+    );
+  }
+
+  function DashboardScreen() {
+    return (
+      <Drawer.Navigator
         drawerContent={(props) => <DrawerComponent {...props} />}>
         <Drawer.Screen name="Dashboard" component={Dashboard} />
-        <Drawer.Screen name="Notifications" component={Notifications} />
-        <Drawer.Screen name="UpdateProfile" component={UpdateProfile} />
-        <Drawer.Screen name="Rating" component={Rating} />
-        <Drawer.Screen name="LoanList" component={LoanList} />
       </Drawer.Navigator>
     );
   }
@@ -56,6 +85,8 @@ export default function Route() {
           name="LoanApplicationType"
           component={LoanApplicationType}
         />
+        <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+        <Stack.Screen name="ResetPassword" component={ResetPassword} />
       </Stack.Navigator>
     );
   }
